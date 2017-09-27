@@ -1,0 +1,23 @@
+{
+  "name": "vbot-notify",
+  "version": "0.0.1",
+  "description": "Vbot notify part",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RPing/Vbot-notify.git"
+  },
+  "author": "RPing (Stephen Chen) <g1222888@gmail.com>",
+  "license": "AGPL v3",
+  "bugs": {
+    "url": "https://github.com/RPing/Vbot-notify/issues"
+  },
+  "homepage": "https://github.com/RPing/Vbot-notify#readme",
+  "dependencies": {
+    "feedparser": "^2.2.1",
+    "request": "^2.82.0"
+  }
+}
