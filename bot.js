@@ -24,10 +24,21 @@ exports.handler = function(event, context, callback) {
             .then((info) => {
                 if (info.length !== 0) {
                     return db.getAllSubscriberPromise(project.project_name)
+                    .then((subscribers) => {
+                        return {
+                            info: info,
+                            subscribers: subscribers
+                        }
+                    })
                 }
             })
-            .then((subscribers) => {
-
+            .then((obj) => {
+                if (obj !== undefined) {
+                    obj.subscribers.forEach((subscriber) => {
+                        const page = site.siteUtil(projectPlatform).getReleasesPage(project)
+                        site.siteUtil(subscriber.platform).notify(subscriber.id, project.project_name, page, obj.info)
+                    })
+                }
             })
         }))
         .then((result) => {
