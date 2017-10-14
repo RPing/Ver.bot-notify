@@ -12,7 +12,6 @@ exports.handler = function(event, context, callback) {
         }
 
         /*
-            loop:
             use Project platform util to get new version info
             query DB project subscriber
             use Chat platform util to notify subscriber
