@@ -21,5 +21,8 @@
     "npm-registry-client": "^8.5.0",
     "request": "^2.82.0",
     "requestretry": "^1.12.2"
+  },
+  "optionalDependencies": {
+    "aws-sdk": "^2.72.0"
   }
 }
