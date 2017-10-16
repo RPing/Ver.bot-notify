@@ -86,15 +86,14 @@ function survey_notify (projectList, cb) {
     })
 }
 
-exports.handler = function(event, context, callback) {
-    async.waterfall([
-        db.getAllProject,
-        survey_notify,
-    ], function (err, result) {
-        if (err) {
-            callback(err)
-        }
+async.waterfall([
+    db.getAllProject,
+    survey_notify,
+], function (err, result) {
+    if (err) {
+        console.error(err)
+        process.exit(1)
+    }
 
-        callback(null)
-    })
-}
+    process.exit()
+})
