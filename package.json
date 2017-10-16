@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/RPing/Vbot-notify#readme",
   "dependencies": {
+    "async": "^2.5.0",
     "feedparser": "^2.2.1",
     "npm-registry-client": "^8.5.0",
     "request": "^2.82.0",
