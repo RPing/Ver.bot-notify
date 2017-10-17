@@ -11,7 +11,7 @@
     "url": "git+https://github.com/RPing/Vbot-notify.git"
   },
   "author": "RPing (Stephen Chen) <g1222888@gmail.com>",
-  "license": "AGPL v3",
+  "license": "AGPL-3.0",
   "bugs": {
     "url": "https://github.com/RPing/Vbot-notify/issues"
   },
