@@ -15,20 +15,28 @@ function needToNotify (results) {
 
 function notify (projectPlatform, projectName, releasePage, results, cb) {
     // notify every subscriber, return true if all succeed
-    let hasSomeError = null
+    const fnList = []
     results.subscribers.forEach((subscriber) => {
-        site.siteUtil(subscriber.platform)
-        .notify(subscriber.id, projectName, releasePage, results.info, (err) => {
-            if (err) {
-                hasSomeError = true
-                console.error('---- error when send to a subscriber ----')
-                console.error(projectPlatform, projectName, subscriber.id)
-                console.error(err)
-            }
+        fnList.push(() => {
+            site.siteUtil(subscriber.platform)
+            .notify(subscriber.id, projectName, releasePage, results.info, (err) => {
+                if (err) {
+                    console.error('---- error when send to a subscriber ----')
+                    console.error(projectPlatform, projectName, subscriber.id)
+                    console.error(err)
+                }
+            })
         })
     })
 
-    cb(hasSomeError)
+    async.parallel(async.reflectAll(fnList),
+    function (err, results) {
+        const hasSomeError = results.some((result) => {
+            return result.error !== undefined
+        })
+
+        cb(hasSomeError)
+    })
 }
 
 function checkAndNotify (results, projectInfo, projectName, projectPlatform, cb) {
