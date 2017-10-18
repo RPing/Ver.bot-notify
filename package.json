@@ -1,21 +1,21 @@
 {
-  "name": "vbot-notify",
+  "name": "ver.bot-notify",
   "version": "0.0.1",
-  "description": "Vbot notify part",
+  "description": "Ver.bot-notify notify part",
   "main": "bot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/RPing/Vbot-notify.git"
+    "url": "git+https://github.com/RPing/Ver.bot-notify.git"
   },
   "author": "RPing (Stephen Chen) <g1222888@gmail.com>",
   "license": "AGPL-3.0",
   "bugs": {
-    "url": "https://github.com/RPing/Vbot-notify/issues"
+    "url": "https://github.com/RPing/Ver.bot-notify/issues"
   },
-  "homepage": "https://github.com/RPing/Vbot-notify#readme",
+  "homepage": "https://github.com/RPing/Ver.bot-notify#readme",
   "dependencies": {
     "async": "^2.5.0",
     "feedparser": "^2.2.1",
