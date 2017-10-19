@@ -89,8 +89,7 @@ function survey_notify (projectList, cb) {
         })
     })
 
-    // for single-core cpu
-    async.parallelLimit(async.reflectAll(fnList), 1,
+    async.parallel(async.reflectAll(fnList),
     function (err, results) {
         const hasSomeError = results.some((result) => {
             return result.error !== undefined
