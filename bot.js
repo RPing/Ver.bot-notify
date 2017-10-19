@@ -17,14 +17,16 @@ function notify (projectPlatform, projectName, releasePage, results, cb) {
     // notify every subscriber, return true if all succeed
     const fnList = []
     results.subscribers.forEach((subscriber) => {
-        fnList.push(() => {
+        fnList.push((inner_cb) => {
             site.siteUtil(subscriber.platform)
             .notify(subscriber.id, projectName, releasePage, results.info, (err) => {
                 if (err) {
                     console.error('---- error when send to a subscriber ----')
                     console.error(projectPlatform, projectName, subscriber.id)
                     console.error(err)
+                    return inner_cb(err)
                 }
+                inner_cb(null)
             })
         })
     })
@@ -42,18 +44,17 @@ function notify (projectPlatform, projectName, releasePage, results, cb) {
 function checkAndNotify (results, projectInfo, projectName, projectPlatform, cb) {
     if (needToNotify(results)) {
         async.waterfall([
-            function (cb) {
+            function (inner_cb) {
                 const releasePage = site.siteUtil(projectPlatform).getReleasesPage(projectInfo)
-                notify(projectPlatform, projectName, releasePage, results, cb)
-            },
-            function (hasSomeError) {
-                if (hasSomeError)
-                    cb(new Error(`failed: ${projectName}`))
-            },
-        ])
-    } else {
-        cb(null, `success: ${projectName}`)
+                notify(projectPlatform, projectName, releasePage, results, inner_cb)
+            }
+        ], function (hasSomeError) {
+            if (hasSomeError)
+                return cb(new Error(`failed: ${projectName}`))
+        })
     }
+
+    cb(null, `success: ${projectName}`)
 }
 
 /*
