@@ -4,6 +4,7 @@
   "description": "Ver.bot-notify notify part",
   "main": "bot.js",
   "scripts": {
+    "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -25,5 +26,10 @@
   },
   "optionalDependencies": {
     "aws-sdk": "^2.72.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.9.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.7.0"
   }
 }
