@@ -43,18 +43,17 @@ function notify(projectPlatform, projectName, releasePage, results, cb) {
 
 function checkAndNotify(results, projectInfo, projectName, projectPlatform, cb) {
     if (needToNotify(results)) {
-        async.waterfall([
+        async.series([
             function (inner_cb) {
                 const releasePage = site.siteUtil(projectPlatform).getReleasesPage(projectInfo)
                 notify(projectPlatform, projectName, releasePage, results, inner_cb)
             }
-        ], function waterfallCallback(hasSomeError) {
-            if (hasSomeError)
-                return cb(new Error(`failed: ${projectName}`))
+        ], function seriesCallback(err) {
+            if (err)
+                cb(new Error(`failed: ${projectName}`))
         })
-    }
-
-    cb(null, `success: ${projectName}`)
+    } else
+        cb(null, `success: ${projectName}`)
 }
 
 /*
