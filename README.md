@@ -36,6 +36,8 @@ npm i
 ```
 2. set following environment variables.
 ```
+AWS_ACCESS_ID
+AWS_SECRET_KEY
 CHECK_DAYS
 SKYPE_APP_ID
 SKYPE_APP_SECRET
