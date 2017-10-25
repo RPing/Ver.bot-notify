@@ -1,7 +1,25 @@
 # Ver.bot-notify
+
+<div align="center">
+    <img src="https://rping.github.io/Ver.bot-site/img/vbot.png" width="160">
+</div>
+<br />
+
+<div align="center">
+
+[![node (6.10.x)](https://img.shields.io/badge/node-6.10.x-brightgreen.svg)]()
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SVRBTQKRQ5VGE)
+
+</div>
+
 Ver.bot notify part.
 
+Webhook part in [here][4].
+
 ## Deploy by yourself
+
+**NOTE:** You should deploy the same **major version** as [webhook part][4].
+
 ### AWS Lambda(`master` branch)
 1. install dependency
 ```bash
@@ -53,3 +71,4 @@ TELEGRAM_BOT_TOKEN
 [1]: http://docs.aws.amazon.com/cli/latest/userguide/installing.html
 [2]: http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
 [3]: http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/WhatIsCloudWatchEvents.html
+[4]: https://github.com/RPing/Ver.bot
