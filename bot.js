@@ -6,6 +6,11 @@ const site = require('./lib/site-utils')
 const checkTime = new Date()
 checkTime.setDate(checkTime.getDate() - process.env.CHECK_DAYS) // current time - CHECK_DAYS
 
+const postNotifyMsg =
+    'If you have any question, post an issue in\nhttps://github.com/RPing/Ver.bot-notify/issues\n' +
+    'Or if you find some security issue, contact me\ng1222888@gmail.com\n' +
+    'To support AWS Lambda and EC2 running, please donate\nhttps://goo.gl/9czXSn (paypal link)'
+
 function needToNotify(results) {
     const hasNewVer = results.info.length > 0
     const hasSubscriber = results.subscribers.length > 0
@@ -41,12 +46,42 @@ function notify(projectPlatform, projectName, releasePage, results, cb) {
     )
 }
 
+function postNotify(subscribers, cb) {
+    const fnList = []
+    subscribers.forEach((subscriber) => {
+        fnList.push((inner_cb) => {
+            site.siteUtil(subscriber.platform)
+                .send(subscriber.id, postNotifyMsg, (err) => {
+                    if (err) {
+                        console.error('---- error when post-notify ----')
+                        console.error(subscriber.platform, subscriber.id)
+                        console.error(err)
+                        return inner_cb(err)
+                    }
+                    inner_cb(null)
+                })
+        })
+    })
+
+    async.parallel(
+        async.reflectAll(fnList),
+        function parallelCallback(err, parallel_results) {
+            const hasSomeError = parallel_results.some(result => result.error !== undefined)
+
+            cb(hasSomeError)
+        }
+    )
+}
+
 function checkAndNotify(results, projectInfo, projectName, projectPlatform, cb) {
     if (needToNotify(results)) {
         async.series([
             function (inner_cb) {
                 const releasePage = site.siteUtil(projectPlatform).getReleasesPage(projectInfo)
                 notify(projectPlatform, projectName, releasePage, results, inner_cb)
+            },
+            function (inner_cb) {
+                postNotify(results.subscribers, inner_cb)
             }
         ], function seriesCallback(err) {
             if (err)
