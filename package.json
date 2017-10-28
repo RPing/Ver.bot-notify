@@ -20,6 +20,8 @@
   "dependencies": {
     "async": "^2.5.0",
     "feedparser": "^2.2.1",
+    "lodash.isequal": "^4.5.0",
+    "lodash.uniqwith": "^4.5.0",
     "npm-registry-client": "^8.5.0",
     "request": "^2.82.0",
     "requestretry": "^1.12.2"
