@@ -1,4 +1,6 @@
 const async = require('async')
+const isEqual = require('lodash.isequal')
+const uniqWith = require('lodash.uniqwith')
 
 const db = require('./lib/db')
 const site = require('./lib/site-utils')
@@ -79,16 +81,15 @@ function checkAndNotify(results, projectInfo, projectName, projectPlatform, cb) 
             function (inner_cb) {
                 const releasePage = site.siteUtil(projectPlatform).getReleasesPage(projectInfo)
                 notify(projectPlatform, projectName, releasePage, results, inner_cb)
-            },
-            function (inner_cb) {
-                postNotify(results.subscribers, inner_cb)
             }
         ], function seriesCallback(err) {
             if (err)
-                cb(new Error(`failed: ${projectName}`))
+                return cb(new Error(`failed project name: ${projectName}`))
+
+            cb(null, results.subscribers)
         })
     } else
-        cb(null, `success: ${projectName}`)
+        cb(null, [])
 }
 
 /*
@@ -132,10 +133,18 @@ function survey_notify(projectList, cb) {
         function parallelCallback(err, results) {
             const hasSomeError = results.some(result => result.error !== undefined)
 
+            // can't return here, since other success cases still need to handle.
             if (hasSomeError)
-                return cb(new Error('Some error happened'))
+                cb(new Error('Some error happened'))
 
-            cb(null)
+            let subscribers = []
+            results.forEach((result) => {
+                if (Array.isArray(result.value) && result.value.length > 0)
+                    subscribers = subscribers.concat(result.value)
+            })
+
+            const filterSubscribers = uniqWith(subscribers, isEqual)
+            postNotify(filterSubscribers, cb)
         }
     )
 }
