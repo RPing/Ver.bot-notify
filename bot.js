@@ -137,6 +137,7 @@ function survey_notify(projectList, cb) {
             if (hasSomeError)
                 cb(new Error('Some error happened'))
 
+            // retrieve subscriber information, and send post-depoly message.
             let subscribers = []
             results.forEach((result) => {
                 if (Array.isArray(result.value) && result.value.length > 0)
