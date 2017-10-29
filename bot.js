@@ -21,58 +21,41 @@ function needToNotify(results) {
 }
 
 function notify(projectPlatform, projectName, releasePage, results, cb) {
-    // notify every subscriber, return true if all succeed
-    const fnList = []
-    results.subscribers.forEach((subscriber) => {
-        fnList.push((inner_cb) => {
-            site.siteUtil(subscriber.platform)
-                .notify(subscriber.id, projectName, releasePage, results.info, (err) => {
-                    if (err) {
-                        console.error('---- error when send to a subscriber ----')
-                        console.error(projectPlatform, projectName, subscriber.id)
-                        console.error(err)
-                        return inner_cb(err)
-                    }
-                    inner_cb(null)
-                })
-        })
+    async.map(results.subscribers, async.reflect(function notifySubscriber(subscriber, cb_) {
+        site.siteUtil(subscriber.platform)
+            .notify(subscriber.id, projectName, releasePage, results.info, (err) => {
+                if (err) {
+                    console.error('---- error when send to a subscriber ----')
+                    console.error(projectPlatform, projectName, subscriber.id)
+                    console.error(err)
+                    return cb_(err)
+                }
+                cb_(null)
+            })
+    }), function parallelCallback(err, parallel_results) {
+        const hasSomeError = parallel_results.some(result => result.error !== undefined)
+
+        cb(hasSomeError)
     })
-
-    async.parallel(
-        async.reflectAll(fnList),
-        function parallelCallback(err, parallel_results) {
-            const hasSomeError = parallel_results.some(result => result.error !== undefined)
-
-            cb(hasSomeError)
-        }
-    )
 }
 
 function postNotify(subscribers, cb) {
-    const fnList = []
-    subscribers.forEach((subscriber) => {
-        fnList.push((inner_cb) => {
-            site.siteUtil(subscriber.platform)
-                .send(subscriber.id, postNotifyMsg, (err) => {
-                    if (err) {
-                        console.error('---- error when post-notify ----')
-                        console.error(subscriber.platform, subscriber.id)
-                        console.error(err)
-                        return inner_cb(err)
-                    }
-                    inner_cb(null)
-                })
-        })
+    async.map(subscribers, async.reflect(function sendPostNotifyMsg(subscriber, cb_) {
+        site.siteUtil(subscriber.platform)
+            .send(subscriber.id, postNotifyMsg, (err) => {
+                if (err) {
+                    console.error('---- error when post-notify ----')
+                    console.error(subscriber.platform, subscriber.id)
+                    console.error(err)
+                    return cb_(err)
+                }
+                cb_(null)
+            })
+    }), function parallelCallback(err, parallel_results) {
+        const hasSomeError = parallel_results.some(result => result.error !== undefined)
+
+        cb(hasSomeError)
     })
-
-    async.parallel(
-        async.reflectAll(fnList),
-        function parallelCallback(err, parallel_results) {
-            const hasSomeError = parallel_results.some(result => result.error !== undefined)
-
-            cb(hasSomeError)
-        }
-    )
 }
 
 function checkAndNotify(results, projectInfo, projectName, projectPlatform, cb) {
@@ -98,56 +81,48 @@ function checkAndNotify(results, projectInfo, projectName, projectPlatform, cb) 
     use Chat platform util to notify subscriber
  */
 function survey_notify(projectList, cb) {
-    const fnList = []
-    projectList.forEach((projectInfo) => {
-        fnList.push((outer_cb) => {
-            const projectPlatform = db.projectPlatform(projectInfo.platform)
-            const projectName = projectInfo.project_name
+    async.map(projectList, async.reflect(function surveyAndNotify(projectInfo, cb_) {
+        const projectPlatform = db.projectPlatform(projectInfo.platform)
+        const projectName = projectInfo.project_name
 
-            async.series(
-                {
-                    info(inner_cb) {
-                        site.siteUtil(projectPlatform)
-                            .getNewVersionInfo(checkTime, projectInfo, inner_cb)
-                    },
-                    subscribers(inner_cb) {
-                        db.getAllSubscriber(projectName, inner_cb)
-                    },
+        async.series(
+            {
+                info(inner_cb) {
+                    site.siteUtil(projectPlatform)
+                        .getNewVersionInfo(checkTime, projectInfo, inner_cb)
                 },
-                function afterSurveyCallback(err, results) {
-                    if (err) {
-                        console.error('---- error when survey the project ----')
-                        console.error(projectPlatform, projectName)
-                        console.error(err)
-                        return outer_cb(err)
-                    }
-
-                    checkAndNotify(results, projectInfo, projectName, projectPlatform, outer_cb)
+                subscribers(inner_cb) {
+                    db.getAllSubscriber(projectName, inner_cb)
+                },
+            },
+            function afterSurveyCallback(err, results) {
+                if (err) {
+                    console.error('---- error when survey the project ----')
+                    console.error(projectPlatform, projectName)
+                    console.error(err)
+                    return cb_(err)
                 }
-            )
+
+                checkAndNotify(results, projectInfo, projectName, projectPlatform, cb_)
+            }
+        )
+    }), function parallelCallback(err, results) {
+        const hasSomeError = results.some(result => result.error !== undefined)
+
+        // can't return here, since other success cases still need to handle.
+        if (hasSomeError)
+            cb(new Error('Some error happened'))
+
+        // retrieve subscriber information, and send post-depoly message.
+        let subscribers = []
+        results.forEach((result) => {
+            if (Array.isArray(result.value) && result.value.length > 0)
+                subscribers = subscribers.concat(result.value)
         })
+
+        const filterSubscribers = uniqWith(subscribers, isEqual)
+        postNotify(filterSubscribers, cb)
     })
-
-    async.parallel(
-        async.reflectAll(fnList),
-        function parallelCallback(err, results) {
-            const hasSomeError = results.some(result => result.error !== undefined)
-
-            // can't return here, since other success cases still need to handle.
-            if (hasSomeError)
-                cb(new Error('Some error happened'))
-
-            // retrieve subscriber information, and send post-depoly message.
-            let subscribers = []
-            results.forEach((result) => {
-                if (Array.isArray(result.value) && result.value.length > 0)
-                    subscribers = subscribers.concat(result.value)
-            })
-
-            const filterSubscribers = uniqWith(subscribers, isEqual)
-            postNotify(filterSubscribers, cb)
-        }
-    )
 }
 
 exports.handler = function (event, context, callback) {
