@@ -11,7 +11,7 @@ checkTime.setDate(checkTime.getDate() - process.env.CHECK_DAYS) // current time 
 const postNotifyMsg =
     'If you have any question, post an issue in\nhttps://github.com/RPing/Ver.bot-notify/issues\n' +
     'Or if you find some security issue, contact me\ng1222888@gmail.com\n' +
-    'To support AWS Lambda and EC2 running, please donate\nhttps://goo.gl/9czXSn (paypal link)'
+    'To support AWS Lambda and EC2 running, please donate\nhttps://www.paypal.me/RPing'
 
 function needToNotify(results) {
     const hasNewVer = results.info.length > 0
