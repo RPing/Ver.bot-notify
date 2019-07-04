@@ -5,7 +5,9 @@
   "main": "bot.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -24,7 +26,8 @@
     "lodash.uniqwith": "^4.5.0",
     "npm-registry-client": "^8.5.0",
     "request": "^2.82.0",
-    "requestretry": "^1.12.2"
+    "requestretry": "^1.12.2",
+    "snyk": "^1.189.0"
   },
   "optionalDependencies": {
     "aws-sdk": "^2.72.0"
@@ -33,5 +36,6 @@
     "eslint": "^4.9.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.7.0"
-  }
+  },
+  "snyk": true
 }
