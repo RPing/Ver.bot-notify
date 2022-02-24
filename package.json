@@ -24,7 +24,7 @@
     "lodash.uniqwith": "^4.5.0",
     "npm-registry-client": "^8.5.0",
     "request": "^2.82.0",
-    "requestretry": "^1.12.2"
+    "requestretry": "^7.0.0"
   },
   "optionalDependencies": {
     "aws-sdk": "^2.72.0"
