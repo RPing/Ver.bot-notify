@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/RPing/Ver.bot-notify#readme",
   "dependencies": {
-    "async": "^2.5.0",
+    "async": "^3.2.2",
     "feedparser": "^2.2.1",
     "lodash.isequal": "^4.5.0",
     "lodash.uniqwith": "^4.5.0",
